@@ -14,7 +14,7 @@
  * @brief Class for KeywordCloud block plugin
  */
 
-define('KEYWORD_BLOCK_MAX_ITEMS', 100);
+define('KEYWORD_BLOCK_MAX_ITEMS', 50);
 define('KEYWORD_BLOCK_CACHE_DAYS', 2);
 
 import('lib.pkp.classes.plugins.BlockPlugin');
@@ -51,20 +51,21 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		$journal = $request->getJournal();
 		if (!$journal) return '';
 		
-		$locale = AppLocale::getLocale();
+		$keywords = $this->getKeywordsJournal($journal->getId());
 
-		$cacheManager = CacheManager::getManager();
-		$cache = $cacheManager->getFileCache(
-			'keywords_'. $locale, $journal->getId(),
-			array($this, '_cacheMiss')
-		);
-
-		$cacheTime = $cache->getCacheTime();
-		if (time() - $cache->getCacheTime() > 60 * 60 * 24 * KEYWORD_BLOCK_CACHE_DAYS)
-			$cache->flush();
-
-		$keywords =& $cache->getContents();
-		if (empty($keywords)) return '';
+		// $cacheManager = CacheManager::getManager();
+		// $cache = $cacheManager->getFileCache(
+		// 	'keywords_'. $locale,
+		// 	$journal->getId(),
+		// 	array($this, '_cacheMiss')
+		// );
+		
+		// $cacheTime = $cache->getCacheTime();
+		// if (time() - $cache->getCacheTime() > 60 * 60 * 24 * KEYWORD_BLOCK_CACHE_DAYS)
+		// $cache->flush();
+		
+		// $keywords =& $cache->getContents();
+		// if (empty($keywords)) return '';
 		
 		$templateMgr->addJavaScript('d3','https://d3js.org/d3.v4.js');
 		$templateMgr->addJavaScript('d3-cloud','https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js');
@@ -73,36 +74,32 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		return parent::getContents($templateMgr, $request);
 	}
 	
-	function _cacheMiss($cache, $id){
-		
+	function getKeywordsJournal($journalId){
 		$submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
 		
 		//Get all IDs of the published Articles
 		$submissionsIterator = Services::get('submission')->getMany([
-			'contextId' => $cache->getCacheId(),
+			'contextId' => $journalId,
 			'status' => STATUS_PUBLISHED,
 		]);
 		
 		//Get all Keywords from all published articles of this journal
 		$all_keywords = array();
+		$currentLocale = AppLocale::getLocale();
 		foreach ($submissionsIterator as $submission) {
 			$articleId = $submission->getId();
-			$submission_keywords = $submissionKeywordDao->getKeywords($articleId, array(AppLocale::getLocale()));
-			$all_keywords = array_merge($all_keywords, $submission_keywords);
+			$submission_keywords = $submissionKeywordDao->getKeywords($articleId, array($currentLocale));
+			$all_keywords = array_merge($all_keywords, $submission_keywords[$currentLocale]);
 		}
-
-		//Count the keywords					
+		
+		//Count the keywords and sort them in a frequency basis
 		$count_keywords = array_count_values($all_keywords);
-
-		//Sort the keywords frequency-based
 		arsort($count_keywords, SORT_NUMERIC);
 
 		// Put only the most often used keywords in an array
 		// maximum of KEYWORD_BLOCK_MAX_ITEMS
 		$top_keywords = array_slice($count_keywords, 0, KEYWORD_BLOCK_MAX_ITEMS);
-		
 		$keywords = array();
-		
 
 		foreach ($top_keywords as $k => $c) {
 			$kw = new stdClass();
@@ -111,9 +108,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 			$keywords[] = $kw;
 		}
 		
-		$cache->setEntireCache(json_encode($keywords));
-
-		return null;
+		return json_encode($keywords);
 	}
 	
 	function getJavaScriptURL($request) {
