@@ -66,9 +66,8 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		$keywords =& $cache->getContents();
 		if (empty($keywords)) return '';
 		
-		$templateMgr->addJavaScript('d3','https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js');
-		$templateMgr->addJavaScript('d3.layout.cloud','https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.0.0/d3.layout.cloud.min.js');
-		$templateMgr->addJavaScript('d3.wordcloud',$this->getJavaScriptURL($request).'d3.wordcloud.min.js');
+		$templateMgr->addJavaScript('d3','https://d3js.org/d3.v4.js');
+		$templateMgr->addJavaScript('d3-cloud','https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js');
 
 		$templateMgr->assign('keywords', $keywords);
 		return parent::getContents($templateMgr, $request);
