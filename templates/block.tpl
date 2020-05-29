@@ -53,11 +53,23 @@
 			.enter().append("text")
 				.style("font-size", function(d) {ldelim} return d.size + "px"; {rdelim})
 				.style("fill", randomColor)
+				.style('cursor', 'pointer')
+				.attr('class', 'keyword')
 				.attr("text-anchor", "middle")
 				.attr("transform", function(d) {ldelim}
 					return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
 				{rdelim})
-				.text(function(d) {ldelim} return d.text; {rdelim});
+				.text(function(d) {ldelim} return d.text; {rdelim})
+				.on("click", function(d, i){ldelim}
+					window.location = "{url router=$smarty.const.ROUTE_PAGE page="search" query="QUERY_SLUG"}".replace(/QUERY_SLUG/, encodeURIComponent(''+d.text+''));
+				{rdelim})
+				.on("mouseover", function(d, i) {ldelim}
+					d3.select(this).transition().style('font-size',function(d) {ldelim} return (1.25*d.size) + "px"; {rdelim});
+				{rdelim})
+				.on("mouseout", function(d, i) {ldelim}
+					d3.select(this).transition().style('font-size',function(d) {ldelim} return d.size + "px"; {rdelim});
+				{rdelim});
+
 		{rdelim}
 
 		layout.start();
