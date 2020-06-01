@@ -51,21 +51,22 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		$journal = $request->getJournal();
 		if (!$journal) return '';
 		
-		$keywords = $this->getKeywordsJournal($journal->getId());
+		$cacheManager = CacheManager::getManager();
+		$cache = $cacheManager->getFileCache(
+			$journal->getId(),
+			'keywords_'. $locale,
+			null
+		);
 
-		// $cacheManager = CacheManager::getManager();
-		// $cache = $cacheManager->getFileCache(
-		// 	'keywords_'. $locale,
-		// 	$journal->getId(),
-		// 	array($this, '_cacheMiss')
-		// );
-		
-		// $cacheTime = $cache->getCacheTime();
-		// if (time() - $cache->getCacheTime() > 60 * 60 * 24 * KEYWORD_BLOCK_CACHE_DAYS)
-		// $cache->flush();
-		
-		// $keywords =& $cache->getContents();
-		// if (empty($keywords)) return '';
+		$cacheTime = $cache->getCacheTime();
+		if (time() - $cache->getCacheTime() > 60 * 60 * 24 * KEYWORD_BLOCK_CACHE_DAYS){
+			$cache->flush();
+			$cache->setEntireCache($this->getKeywordsJournal($journal->getId()));
+		}
+		else if ($keywords == "[]"){
+			$cache->setEntireCache($this->getKeywordsJournal($journal->getId()));
+		}
+		$keywords =& $cache->getContents();
 		
 		$templateMgr->addJavaScript('d3','https://d3js.org/d3.v4.js');
 		$templateMgr->addJavaScript('d3-cloud','https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js');
