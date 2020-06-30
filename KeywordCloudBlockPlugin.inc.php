@@ -18,7 +18,7 @@ define('KEYWORD_BLOCK_MAX_ITEMS', 50);
 define('KEYWORD_BLOCK_CACHE_DAYS', 2);
 
 import('lib.pkp.classes.plugins.BlockPlugin');
-import ('classes.submission.SubmissionDAO');
+import('classes.article.ArticleDAO');
 
 class KeywordCloudBlockPlugin extends BlockPlugin {
 	/**
@@ -76,23 +76,20 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 	}
 	
 	function getKeywordsJournal($journalId){
-		$submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
+		$publishedArticleDao = DAORegistry::getDAO('PublishedArticleDAO');
+		$publishedArticles =& $publishedArticleDao->getPublishedArticlesByJournalId($journalId, $rangeInfo = null, $reverse = true);
 		
-		//Get all IDs of the published Articles
-		$submissionsIterator = Services::get('submission')->getMany([
-			'contextId' => $journalId,
-			'status' => STATUS_PUBLISHED,
-		]);
+		$submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
 		
 		//Get all Keywords from all published articles of this journal
 		$all_keywords = array();
 		$currentLocale = AppLocale::getLocale();
-		foreach ($submissionsIterator as $submission) {
-			$articleId = $submission->getId();
-			$submission_keywords = $submissionKeywordDao->getKeywords($articleId, array($currentLocale));
+		while ($article = $publishedArticles->next()) {
+			$articleId = $article->getId();
+			$article_keywords = $submissionKeywordDao->getKeywords($articleId, array($currentLocale));
 
-			if(count($submission_keywords) > 0) {
-				$all_keywords = array_merge($all_keywords, $submission_keywords[$currentLocale]);
+			if(count($article_keywords) > 0) {
+				$all_keywords = array_merge($all_keywords, $article_keywords[$currentLocale]);
 			}	
 		}
 		
