@@ -90,7 +90,10 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		foreach ($submissionsIterator as $submission) {
 			$articleId = $submission->getId();
 			$submission_keywords = $submissionKeywordDao->getKeywords($articleId, array($currentLocale));
-			$all_keywords = array_merge($all_keywords, $submission_keywords[$currentLocale]);
+
+			if(count($submission_keywords) > 0) {
+				$all_keywords = array_merge($all_keywords, $submission_keywords[$currentLocale]);
+			}	
 		}
 		
 		//Count the keywords and sort them in a frequency basis
@@ -116,5 +119,3 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		return $request->getBaseUrl() . '/' . $this->getPluginPath() . '/js/';
 	}
 }
-
-?>
