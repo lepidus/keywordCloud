@@ -58,7 +58,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 			null
 		);
 
-		$cacheTime = $cache->getCacheTime();
+		$keywords =& $cache->getContents();
 		if (time() - $cache->getCacheTime() > 60 * 60 * 24 * KEYWORD_BLOCK_CACHE_DAYS){
 			$cache->flush();
 			$cache->setEntireCache($this->getKeywordsJournal($journal->getId()));
@@ -66,7 +66,6 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		else if ($keywords == "[]"){
 			$cache->setEntireCache($this->getKeywordsJournal($journal->getId()));
 		}
-		$keywords =& $cache->getContents();
 		
 		$templateMgr->addJavaScript('d3','https://d3js.org/d3.v4.js');
 		$templateMgr->addJavaScript('d3-cloud','https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js');
