@@ -58,7 +58,8 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 			null
 		);
 
-		$cacheTime = $cache->getCacheTime();
+		$keywords =& $cache->getContents();
+		
 		if (time() - $cache->getCacheTime() > 60 * 60 * 24 * KEYWORD_BLOCK_CACHE_DAYS){
 			$cache->flush();
 			$cache->setEntireCache($this->getKeywordsJournal($journal->getId()));
@@ -66,8 +67,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		else if ($keywords == "[]"){
 			$cache->setEntireCache($this->getKeywordsJournal($journal->getId()));
 		}
-		$keywords =& $cache->getContents();
-		
+
 		$templateMgr->addJavaScript('d3','https://d3js.org/d3.v4.js');
 		$templateMgr->addJavaScript('d3-cloud','https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js');
 
@@ -77,7 +77,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 	
 	function getKeywordsJournal($journalId){
 		$submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
-		
+
 		//Get all IDs of the published Articles
 		$submissionsIterator = Services::get('submission')->getMany([
 			'contextId' => $journalId,
@@ -88,14 +88,16 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		$all_keywords = array();
 		$currentLocale = AppLocale::getLocale();
 		foreach ($submissionsIterator as $submission) {
-			$articleId = $submission->getId();
-			$submission_keywords = $submissionKeywordDao->getKeywords($articleId, array($currentLocale));
+			$publications = $submission->getPublishedPublications();
 
-			if(count($submission_keywords) > 0) {
-				$all_keywords = array_merge($all_keywords, $submission_keywords[$currentLocale]);
-			}	
+			foreach ($publications as $publication){
+				$publi_keywords = $submissionKeywordDao->getKeywords($publication->getId(), array($currentLocale));
+				
+				if(count($publi_keywords) > 0) {
+					$all_keywords = array_merge($all_keywords, $publi_keywords[$currentLocale]);
+				}
+			}
 		}
-		
 		//Count the keywords and sort them in a frequency basis
 		$count_keywords = array_count_values($all_keywords);
 		arsort($count_keywords, SORT_NUMERIC);
