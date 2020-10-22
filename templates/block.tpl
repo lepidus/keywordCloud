@@ -17,7 +17,7 @@
 		width: max-content;
 	}		
 	#wordcloud {
-	height: 300px;
+	height: 400px;
     width: max-content;
     margin: 0px;
     padding: 0px;
@@ -31,14 +31,11 @@
 
 	document.addEventListener("DOMContentLoaded", function() {ldelim}
 		var keywords = {$keywords};
-		var pesoTotal = 0;
-
-		console.log(keywords);
+		var totalWeight = 0;
 
 		var length_keywords = keywords.length;
-		console.log(length_keywords)
 
-		keywords.forEach(function(item,index){ldelim}pesoTotal += item.size;{rdelim});
+		keywords.forEach(function(item,index){ldelim}totalWeight += item.size;{rdelim});
 
 		var svg = d3.select("#wordcloud").append("svg")
 			.attr("width", '100%')
@@ -53,15 +50,15 @@
 				.padding(1)
 				.fontSize(function(d){ldelim}
 
-					var minimo = 0.05 * (height/length_keywords), maximo = 0.1 * (height/length_keywords);
+					var minimum = 0.05 * (height/length_keywords), maximum = 0.1 * (height/length_keywords);
 				
-					var frequency = d.size/pesoTotal;
-					var peso = frequency * (height/length_keywords);
+					var frequency = d.size/totalWeight;
+					var weight = frequency * (height/length_keywords);
 
-					if(peso < minimo) return Math.floor(minimo) + 10;
-					if(peso > maximo) return Math.ceil(maximo) + 15; 
+					if(weight < minimum) return 10;
+					if(weight > maximum) return Math.ceil(maximum) + 15; 
 					
-					return Math.ceil(peso) + 12;
+					return Math.ceil(weight) + 12;
 				{rdelim})
 				.on('end', draw);
 
