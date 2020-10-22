@@ -15,7 +15,7 @@
  */
 
 define('KEYWORD_BLOCK_MAX_ITEMS', 50);
-define('KEYWORD_BLOCK_CACHE_DAYS', 2);
+define('KEYWORD_BLOCK_CACHE_DAYS', 0);
 
 import('lib.pkp.classes.plugins.BlockPlugin');
 import ('classes.submission.SubmissionDAO');
@@ -114,6 +114,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 			$keywords[] = $kw;
 		}
 		
+		//print_r($keywords);
 		return json_encode($keywords);
 	}
 	
