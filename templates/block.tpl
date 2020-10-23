@@ -8,21 +8,12 @@
  * Common site sidebar menu -- keywords cloud.
  *
  *}
-<div class="pkp_block block_Keywordcloud">
+
+<div class="pkp_block block_Keywordcloud">	
+	<link rel="stylesheet" type="text/css" href="/plugins/blocks/keywordCloud/styles/style.css">
 	<span class="title">{translate key="plugins.block.keywordCloud.title"}</span>
 	<div class="content" id='wordcloud'></div>
-	<style>
-	.pkp_block .block_Keywordcloud{
-		height: max-content;
-		width: max-content;
-	}		
-	#wordcloud {
-	height: 400px;
-    width: max-content;
-    margin: 0px;
-    padding: 0px;
-	}
-	</style>
+
 	<script>
 	function randomColor(){ldelim}
 		var cores = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
@@ -50,15 +41,15 @@
 				.padding(1)
 				.fontSize(function(d){ldelim}
 
-					var minimum = 0.05 * (height/length_keywords), maximum = 0.1 * (height/length_keywords);
+					var minimum = 0.20, maximum = 0.35;
 				
 					var frequency = d.size/totalWeight;
 					var weight = frequency * (height/length_keywords);
 
 					if(weight < minimum) return 10;
-					if(weight > maximum) return Math.ceil(maximum) + 15; 
+					if(weight > maximum) return 35; 
 					
-					return Math.ceil(weight) + 12;
+					return 20;
 				{rdelim})
 				.on('end', draw);
 

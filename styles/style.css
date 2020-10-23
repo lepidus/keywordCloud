@@ -1,0 +1,10 @@
+.pkp_block .block_Keywordcloud{
+    height: max-content;
+    width: max-content;
+}		
+#wordcloud {
+    height: 400px;
+    width: 300px;
+    margin: 0px;
+    padding: 0px;
+}
