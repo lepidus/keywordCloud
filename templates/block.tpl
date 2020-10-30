@@ -41,15 +41,16 @@
 				.padding(1)
 				.fontSize(function(d){ldelim}
 
-					var minimum = 0.20, maximum = 0.35;
+					const functionMinimum = 0.20, functionMaximum = 0.35;
+					const sizeMinimum = 10, sizeMedium = 20, sizeMaximum = 35;
 				
 					var frequency = d.size/totalWeight;
 					var weight = frequency * (height/length_keywords);
 
-					if(weight < minimum) return 10;
-					if(weight > maximum) return 35; 
+					if(weight < minimum) return sizeMinimum;
+					if(weight > maximum) return sizeMaximum; 
 					
-					return 20;
+					return sizeMedium;
 				{rdelim})
 				.on('end', draw);
 
