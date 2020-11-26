@@ -16,6 +16,8 @@
 
 define('KEYWORD_BLOCK_MAX_ITEMS', 50);
 define('KEYWORD_BLOCK_CACHE_DAYS', 2);
+define('ONE_DAY_SECONDS', 60 * 60 * 24);
+define('TWO_DAYS_SECONDS',ONE_DAY_SECONDS * KEYWORD_BLOCK_CACHE_DAYS);
 
 import('lib.pkp.classes.plugins.BlockPlugin');
 import ('classes.submission.SubmissionDAO');
@@ -59,8 +61,9 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		);
 
 		$keywords =& $cache->getContents();
+		$currentCacheTime = time() - $cache->getCacheTime();
 		
-		if (time() - $cache->getCacheTime() > 60 * 60 * 24 * KEYWORD_BLOCK_CACHE_DAYS){
+		if ($currentCacheTime > TWO_DAYS_SECONDS){
 			$cache->flush();
 			$cache->setEntireCache($this->getKeywordsJournal($journal->getId()));
 		}
@@ -107,11 +110,11 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		$top_keywords = array_slice($count_keywords, 0, KEYWORD_BLOCK_MAX_ITEMS);
 		$keywords = array();
 
-		foreach ($top_keywords as $k => $c) {
-			$kw = new stdClass();
-			$kw->text = $k;
-			$kw->size = $c;
-			$keywords[] = $kw;
+		foreach ($top_keywords as $key => $countKey) {
+			$keyWords = new stdClass();
+			$keyWords->text = $key;
+			$keyWords->size = $countKey;
+			$keywords[] = $keyWords;
 		}
 		
 		return json_encode($keywords);
