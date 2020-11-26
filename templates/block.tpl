@@ -47,8 +47,8 @@
 					var frequency = d.size/totalWeight;
 					var weight = frequency * (height/length_keywords);
 
-					if(weight < minimum) return sizeMinimum;
-					if(weight > maximum) return sizeMaximum; 
+					if(weight < functionMinimum) return sizeMinimum;
+					if(weight > functionMaximum) return sizeMaximum; 
 					
 					return sizeMedium;
 				{rdelim})
