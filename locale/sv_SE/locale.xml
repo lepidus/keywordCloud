@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE locale SYSTEM "../../../../../lib/pkp/dtd/locale.dtd">
+
+<!--
+	* plugins/blocks/keywordCloud/locale/sv_SE/locale.xml
+	*
+	* Copyright (c) 2013-2018 Simon Fraser University
+	* Copyright (c) 2003-2018 John Willinsky
+	* Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
+	*
+	* Localization strings.
+	-->
+ 
+<locale name="sv_SE" full_name="Swedish">
+	<message key="plugins.block.keywordCloud.displayName">Nyckelordsmoln-block</message>
+	<message key="plugins.block.keywordCloud.description">Detta plugin skapar ett ordmoln av artiklarnas nyckelord.</message>
+	<message key="plugins.block.keywordCloud.title">Nyckelord</message>
+</locale>
