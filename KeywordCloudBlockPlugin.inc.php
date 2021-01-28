@@ -53,6 +53,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		$journal = $request->getJournal();
 		if (!$journal) return '';
 		
+		$locale = AppLocale::getLocale();
 		$cacheManager = CacheManager::getManager();
 		$cache = $cacheManager->getFileCache(
 			$journal->getId(),
