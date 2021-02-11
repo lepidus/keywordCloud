@@ -1,0 +1,21 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2021-02-11T02:08:20+00:00\n"
+"PO-Revision-Date: 2021-02-11T02:08:20+00:00\n"
+"Language: \n"
+
+msgid "plugins.block.keywordCloud.displayName"
+msgstr "Bloque de Palabras Clave"
+
+msgid "plugins.block.keywordCloud.description"
+msgstr "Este plugin provee de una nube de tags de palabras clave de artículos."
+
+msgid "plugins.block.keywordCloud.title"
+msgstr "Palabras Clave"
