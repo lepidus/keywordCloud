@@ -29,11 +29,11 @@
 		keywords.forEach(function(item,index){ldelim}totalWeight += item.size;{rdelim});
 
 		var svg = d3.select("#wordcloud").append("svg")
-			.attr("width", '100%')
-			.attr("height", '100%');	
+			.attr("viewBox", '0 0 300 200')	
+			.attr("width", '100%');
 
-		var width = document.getElementById('wordcloud').clientWidth;
-		var height = document.getElementById('wordcloud').clientHeight;
+		var width = 300;
+		var height = 200;
 
 		var layout = d3.layout.cloud()
 				.size([width, height])
@@ -58,8 +58,6 @@
 			svg
 			.append("g")
 			.attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
-			.attr("width",'100%')
-			.attr("height",'100%')
 			.selectAll("text")
 				.data(words)
 			.enter().append("text")
