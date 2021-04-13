@@ -62,6 +62,7 @@
 				.data(words)
 			.enter().append("text")
 				.style("font-size", function(d) {ldelim} return d.size + "px"; {rdelim})
+				.style("font-family", 'serif')
 				.style("fill", randomColor)
 				.style('cursor', 'pointer')
 				.attr('class', 'keyword')
