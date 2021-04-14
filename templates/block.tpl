@@ -9,8 +9,7 @@
  *
  *}
 
-<div class="pkp_block block_Keywordcloud">	
-	<link rel="stylesheet" type="text/css" href="/plugins/blocks/keywordCloud/styles/style.css">
+<div class="pkp_block block_Keywordcloud">
 	<span class="title">{translate key="plugins.block.keywordCloud.title"}</span>
 	<div class="content" id='wordcloud'></div>
 
