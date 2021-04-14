@@ -65,6 +65,7 @@
 				.style("font-family", 'serif')
 				.style("fill", randomColor)
 				.style('cursor', 'pointer')
+				.style('opacity', 0.5)
 				.attr('class', 'keyword')
 				.attr("text-anchor", "middle")
 				.attr("transform", function(d) {ldelim}
@@ -75,10 +76,14 @@
 					window.location = "{url router=$smarty.const.ROUTE_PAGE page="search" query="QUERY_SLUG"}".replace(/QUERY_SLUG/, encodeURIComponent(''+d.text+''));
 				{rdelim})
 				.on("mouseover", function(d, i) {ldelim}
-					d3.select(this).transition().style('font-size',function(d) {ldelim} return (1.25*d.size) + "px"; {rdelim});
+					d3.select(this).transition()
+						.style('font-size',function(d) {ldelim} return (1.25*d.size) + "px"; {rdelim})
+						.style('opacity', 1);
 				{rdelim})
 				.on("mouseout", function(d, i) {ldelim}
-					d3.select(this).transition().style('font-size',function(d) {ldelim} return d.size + "px"; {rdelim});
+					d3.select(this).transition()
+						.style('font-size',function(d) {ldelim} return d.size + "px"; {rdelim})
+						.style('opacity', 0.5);
 				{rdelim});
 
 		{rdelim}
