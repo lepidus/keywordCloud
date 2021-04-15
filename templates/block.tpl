@@ -27,12 +27,15 @@
 
 		keywords.forEach(function(item,index){ldelim}totalWeight += item.size;{rdelim});
 
-		var svg = d3.select("#wordcloud").append("svg")
-			.attr("viewBox", '0 0 300 200')	
-			.attr("width", '100%');
-
 		var width = 300;
 		var height = 200;
+
+		var svg = d3.select("#wordcloud").append("svg")
+			.attr("viewBox", "0 0 " + width + " " + height)	
+			.attr("width", '100%');
+
+		
+		transitionDuration = 200;
 
 		var layout = d3.layout.cloud()
 				.size([width, height])
@@ -53,10 +56,25 @@
 				{rdelim})
 				.on('end', draw);
 
-		function draw(words) {ldelim}
+		function draw(words, bounds) {ldelim}
+			var w = layout.size()[0],
+                h = layout.size()[1];
+
+			scaling = bounds
+                ? Math.min(
+                      w / Math.abs(bounds[1].x - w / 2),
+                      w / Math.abs(bounds[0].x - w / 2),
+                      h / Math.abs(bounds[1].y - h / 2),
+                      h / Math.abs(bounds[0].y - h / 2),
+                  ) / 2
+                : 1;
+
 			svg
 			.append("g")
-			.attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+			.attr(
+                "transform",
+                "translate(" + [w >> 1, h >> 1] + ")scale(" + scaling + ")",
+            )
 			.selectAll("text")
 				.data(words)
 			.enter().append("text")
@@ -76,11 +94,13 @@
 				{rdelim})
 				.on("mouseover", function(d, i) {ldelim}
 					d3.select(this).transition()
-						.style('font-size',function(d) {ldelim} return (1.25*d.size) + "px"; {rdelim})
+						.duration(transitionDuration)
+						.style('font-size',function(d) {ldelim} return (d.size + 3) + "px"; {rdelim})
 						.style('opacity', 1);
 				{rdelim})
 				.on("mouseout", function(d, i) {ldelim}
 					d3.select(this).transition()
+						.duration(transitionDuration)
 						.style('font-size',function(d) {ldelim} return d.size + "px"; {rdelim})
 						.style('opacity', 0.5);
 				{rdelim});
