@@ -44,7 +44,7 @@
 				.fontSize(function(d){ldelim}
 
 					const functionMinimum = 0.20, functionMaximum = 0.35;
-					const sizeMinimum = 10, sizeMedium = 20, sizeMaximum = 35;
+					const sizeMinimum = 18, sizeMedium = 26, sizeMaximum = 34;
 				
 					var frequency = d.size/totalWeight;
 					var weight = frequency * (height/length_keywords);
@@ -82,7 +82,7 @@
 				.style("font-family", 'serif')
 				.style("fill", randomColor)
 				.style('cursor', 'pointer')
-				.style('opacity', 0.5)
+				.style('opacity', 0.7)
 				.attr('class', 'keyword')
 				.attr("text-anchor", "middle")
 				.attr("transform", function(d) {ldelim}
@@ -102,7 +102,7 @@
 					d3.select(this).transition()
 						.duration(transitionDuration)
 						.style('font-size',function(d) {ldelim} return d.size + "px"; {rdelim})
-						.style('opacity', 0.5);
+						.style('opacity', 0.7);
 				{rdelim});
 
 		{rdelim}
