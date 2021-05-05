@@ -14,7 +14,7 @@
 	<div class="content" id='wordcloud'></div>
 
 	<script>
-	function randomColor(){ldelim}
+	function randomColor() {ldelim}
 		var cores = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
 		return cores[Math.floor(Math.random()*cores.length)];
 	{rdelim}
@@ -22,39 +22,35 @@
 	document.addEventListener("DOMContentLoaded", function() {ldelim}
 		var keywords = {$keywords};
 		var totalWeight = 0;
-
-		var length_keywords = keywords.length;
-
-		keywords.forEach(function(item,index){ldelim}totalWeight += item.size;{rdelim});
-
 		var width = 300;
 		var height = 200;
+		var transitionDuration = 200;	
+		var length_keywords = keywords.length;
+		var layout = d3.layout.cloud();
 
+		layout.size([width, height])
+			.words(keywords)
+			.fontSize(function(d)
+			{ldelim}
+				return fontSize(+d.size);
+			{rdelim})
+			.on('end', draw);
+		
 		var svg = d3.select("#wordcloud").append("svg")
 			.attr("viewBox", "0 0 " + width + " " + height)	
-			.attr("width", '100%');
-
+			.attr("width", '100%');		
 		
-		transitionDuration = 200;
+		function update() {ldelim}
+			var words = layout.words();
+			fontSize = d3.scaleLinear().range([16, 34]);
+			if (words.length) {ldelim}
+				fontSize.domain([+words[words.length - 1].size || 1, +words[0].size]);
+			{rdelim}
+		{rdelim}
+		
+		keywords.forEach(function(item,index){ldelim}totalWeight += item.size;{rdelim});
 
-		var layout = d3.layout.cloud()
-				.size([width, height])
-				.words(keywords)
-				.padding(1)
-				.fontSize(function(d){ldelim}
-
-					const functionMinimum = 0.20, functionMaximum = 0.35;
-					const sizeMinimum = 18, sizeMedium = 26, sizeMaximum = 34;
-				
-					var frequency = d.size/totalWeight;
-					var weight = frequency * (height/length_keywords);
-
-					if(weight < functionMinimum) return sizeMinimum;
-					if(weight > functionMaximum) return sizeMaximum; 
-					
-					return sizeMedium;
-				{rdelim})
-				.on('end', draw);
+		update();
 
 		function draw(words, bounds) {ldelim}
 			var w = layout.size()[0],
@@ -103,8 +99,8 @@
 						.duration(transitionDuration)
 						.style('font-size',function(d) {ldelim} return d.size + "px"; {rdelim})
 						.style('opacity', 0.7);
-				{rdelim});
-
+				{rdelim})
+				.on('resize', function() {ldelim} update() {rdelim});
 		{rdelim}
 
 		layout.start();
@@ -112,6 +108,4 @@
 	{rdelim});
 
 	</script>
-
-	
 </div>
