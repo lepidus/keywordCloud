@@ -40,6 +40,12 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 	}
 
 	/**
+	 * fallBack for getFileCache
+	 */
+	function _cacheDismiss() {
+		return null;
+	}
+	/**
 	 * Get a description of the plugin.
 	 */
 	function getDescription() {
@@ -58,7 +64,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		$cache = $cacheManager->getFileCache(
 			$journal->getId(),
 			'keywords_'. $locale,
-			null
+			[$this, '_cacheDismiss']
 		);
 
 		$keywords =& $cache->getContents();
