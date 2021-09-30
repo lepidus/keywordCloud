@@ -42,7 +42,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 	/**
 	 * fallBack for getFileCache
 	 */
-	function _cacheDismiss() {
+	function cacheDismiss() {
 		return null;
 	}
 	/**
