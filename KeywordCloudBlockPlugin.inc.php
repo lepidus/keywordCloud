@@ -64,7 +64,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 		$cache = $cacheManager->getFileCache(
 			$journal->getId(),
 			'keywords_'. $locale,
-			[$this, '_cacheDismiss']
+			[$this, 'cacheDismiss']
 		);
 
 		$keywords =& $cache->getContents();
