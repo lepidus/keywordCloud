@@ -10,7 +10,7 @@
  *}
 
 <div class="pkp_block block_Keywordcloud">
-	<span class="title">{translate key="plugins.block.keywordCloud.title"}</span>
+	<h2 class="title">{translate key="plugins.block.keywordCloud.title"}</h2>
 	<div class="content" id='wordcloud'></div>
 
 	<script>
