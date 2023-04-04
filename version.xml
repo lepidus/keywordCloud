@@ -13,8 +13,8 @@
 <version>
 	<application>keywordCloud</application>
 	<type>plugins.blocks</type>
-	<release>1.1.0.7</release>
-	<date>2022-02-02</date>
+	<release>1.1.0.8</release>
+	<date>2023-04-04</date>
 	<lazy-load>1</lazy-load>
 	<class>KeywordCloudBlockPlugin</class>
 </version>
