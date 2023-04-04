@@ -56,7 +56,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin {
 	 * @see BlockPlugin::getContents
 	 */
 	function getContents($templateMgr, $request = null) {
-		$journal = $request->getJournal();
+		$journal = $request->getContext();
 		if (!$journal) return '';
 		
 		$locale = AppLocale::getLocale();
