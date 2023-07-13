@@ -1,7 +1,4 @@
 <?php
-/**
- * @defgroup plugins_blocks_Keywordcloud KeywordCloud Block Plugin
- */
 
 /**
  * @file plugins/blocks/KeywordCloud/index.php
@@ -15,6 +12,4 @@
  *
  */
 
-require_once('KeywordCloudBlockPlugin.inc.php');
-
-return new KeywordCloudBlockPlugin();
+return new \APP\plugins\blocks\keywordCloud\KeywordCloudBlockPlugin();

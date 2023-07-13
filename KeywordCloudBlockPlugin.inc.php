@@ -2,14 +2,14 @@
 <?php
 
 /**
- * @file plugins/blocks/KeywordCloud/KeywordCloudBlockPlugin.inc.php
+ * @file plugins/blocks/keywordCloud/KeywordCloudBlockPlugin.inc.php
  *
  * Copyright (c) 2014-2018 Simon Fraser University
  * Copyright (c) 2003-2018 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class KeywordCloudBlockPlugin
- * @ingroup plugins_blocks_Keywordcloud
+ * @ingroup plugins_blocks_keywordcloud
  *
  * @brief Class for KeywordCloud block plugin
  */
@@ -19,47 +19,31 @@ define('KEYWORD_BLOCK_CACHE_DAYS', 2);
 define('ONE_DAY_SECONDS', 60 * 60 * 24);
 define('TWO_DAYS_SECONDS', ONE_DAY_SECONDS * KEYWORD_BLOCK_CACHE_DAYS);
 
-import('lib.pkp.classes.plugins.BlockPlugin');
-import('classes.submission.SubmissionDAO');
+use PKP\plugins\BlockPlugin;
 
 class KeywordCloudBlockPlugin extends BlockPlugin
 {
-    /**
-     * Install default settings on journal creation.
-     * @return string
-     */
-    public function getContextSpecificPluginSettingsFile()
-    {
-        return $this->getPluginPath() . '/settings.xml';
-    }
-
-    /**
-     * Get the display name of this plugin.
-     * @return String
-     */
+    
     public function getDisplayName()
     {
         return __('plugins.block.keywordCloud.displayName');
     }
 
-    /**
-     * fallBack for getFileCache
-     */
-    public function cacheDismiss()
-    {
-        return null;
-    }
-    /**
-     * Get a description of the plugin.
-     */
     public function getDescription()
     {
         return __('plugins.block.keywordCloud.description');
     }
 
-    /**
-     * @see BlockPlugin::getContents
-     */
+    public function getContextSpecificPluginSettingsFile()
+    {
+        return $this->getPluginPath() . '/settings.xml';
+    }
+
+    public function cacheDismiss()
+    {
+        return null;
+    }
+
     public function getContents($templateMgr, $request = null)
     {
         $context = $request->getContext();
@@ -134,9 +118,8 @@ class KeywordCloudBlockPlugin extends BlockPlugin
 
         return json_encode($keywords);
     }
+}
 
-    public function getJavaScriptURL($request)
-    {
-        return $request->getBaseUrl() . '/' . $this->getPluginPath() . '/js/';
-    }
+if (!PKP_STRICT_MODE) {
+    class_alias('\APP\plugins\blocks\keywordCloud\KeywordCloudBlockPlugin', '\KeywordCloudBlockPlugin');
 }
