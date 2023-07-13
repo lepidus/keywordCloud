@@ -6,4 +6,3 @@ include:
     ref: main
     file:
       - 'templates/groups/pkp_plugin.yml'
-      - 'templates/groups/ojs_plugins_cypress_tests_model.yml'
