@@ -1,4 +1,3 @@
- 
 <?php
 
 /**
@@ -9,20 +8,24 @@
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class KeywordCloudBlockPlugin
- * @ingroup plugins_blocks_keywordcloud
  *
  * @brief Class for KeywordCloud block plugin
  */
 
-define('KEYWORD_BLOCK_MAX_ITEMS', 50);
-define('KEYWORD_BLOCK_CACHE_DAYS', 2);
-define('ONE_DAY_SECONDS', 60 * 60 * 24);
-define('TWO_DAYS_SECONDS', ONE_DAY_SECONDS * KEYWORD_BLOCK_CACHE_DAYS);
+namespace APP\plugins\blocks\keywordCloud;
 
 use PKP\plugins\BlockPlugin;
+use PKP\cache\CacheManager;
+use APP\facades\Repo;
+use PKP\facades\Locale;
+use APP\submission\Submission;
 
 class KeywordCloudBlockPlugin extends BlockPlugin
 {
+    private const KEYWORD_BLOCK_MAX_ITEMS = 50;
+    private const KEYWORD_BLOCK_CACHE_DAYS = 2;
+    private const ONE_DAY_SECONDS = 60 * 60 * 24;
+    private const TWO_DAYS_SECONDS = self::ONE_DAY_SECONDS * self::KEYWORD_BLOCK_CACHE_DAYS;
     
     public function getDisplayName()
     {
@@ -51,7 +54,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin
             return '';
         }
 
-        $locale = AppLocale::getLocale();
+        $locale = Locale::getLocale();
         $cacheManager = CacheManager::getManager();
         $cache = $cacheManager->getFileCache(
             $context->getId(),
@@ -62,7 +65,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin
         $keywords =& $cache->getContents();
         $currentCacheTime = time() - $cache->getCacheTime();
 
-        if ($currentCacheTime > TWO_DAYS_SECONDS) {
+        if ($currentCacheTime > self::TWO_DAYS_SECONDS) {
             $cache->flush();
             $cache->setEntireCache($this->getKeywordsJournal($context->getId()));
         } elseif ($keywords == "[]") {
@@ -76,44 +79,36 @@ class KeywordCloudBlockPlugin extends BlockPlugin
         return parent::getContents($templateMgr, $request);
     }
 
-    public function getKeywordsJournal($journalId)
+    public function getKeywordsJournal(int $journalId): string
     {
-        $submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
-
-        //Get all IDs of the published Articles
-        $submissionsIterator = Services::get('submission')->getMany([
-            'contextId' => $journalId,
-            'status' => STATUS_PUBLISHED,
-        ]);
-
-        //Get all Keywords from all published articles of this journal
-        $all_keywords = array();
-        $currentLocale = AppLocale::getLocale();
-        foreach ($submissionsIterator as $submission) {
+        $submissions = Repo::submission()
+            ->getCollector()
+            ->filterByContextIds([$journalId])
+            ->filterByStatus([Submission::STATUS_PUBLISHED])
+            ->getMany();
+        
+        $keywords = array();
+        $locale = Locale::getLocale();
+        foreach ($submissions as $submission) {
             $publications = $submission->getPublishedPublications();
 
             foreach ($publications as $publication) {
-                $publi_keywords = $submissionKeywordDao->getKeywords($publication->getId(), array($currentLocale));
+                $publicationKeywords = $publication->getData('keywords', $locale);
 
-                if(count($publi_keywords) > 0) {
-                    $all_keywords = array_merge($all_keywords, $publi_keywords[$currentLocale]);
+                if(!is_null($publicationKeywords) and count($publicationKeywords) > 0) {
+                    $keywords = array_merge($keywords, $publicationKeywords);
                 }
             }
         }
-        //Count the keywords and sort them in a frequency basis
-        $count_keywords = array_count_values($all_keywords);
-        arsort($count_keywords, SORT_NUMERIC);
 
-        // Put only the most often used keywords in an array
-        // maximum of KEYWORD_BLOCK_MAX_ITEMS
-        $top_keywords = array_slice($count_keywords, 0, KEYWORD_BLOCK_MAX_ITEMS);
+        $countKeywords = array_count_values($keywords);
+        arsort($countKeywords, SORT_NUMERIC);
+
+        $topKeywords = array_slice($countKeywords, 0, self::KEYWORD_BLOCK_MAX_ITEMS);
         $keywords = array();
 
-        foreach ($top_keywords as $key => $countKey) {
-            $keyWords = new stdClass();
-            $keyWords->text = $key;
-            $keyWords->size = $countKey;
-            $keywords[] = $keyWords;
+        foreach ($topKeywords as $key => $countKey) {
+            $keywords[] = (object) ['text' => $key, 'size' => $countKey];
         }
 
         return json_encode($keywords);

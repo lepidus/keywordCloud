@@ -7,7 +7,6 @@
  * Copyright (c) 2003-2018 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
- * @ingroup plugins_blocks_Keywordcloud
  * @brief Wrapper for KeywordCloud block plugin.
  *
  */
