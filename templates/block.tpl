@@ -22,13 +22,13 @@
         document.addEventListener("DOMContentLoaded", function() {ldelim}
             var keywords = {$keywords};
             var totalWeight = 0;
-            var width = 300;
-            var height = 200;
+            var blockWidth = 300;
+            var blockHeight = 200;
             var transitionDuration = 200;	
             var length_keywords = keywords.length;
             var layout = d3.layout.cloud();
 
-            layout.size([width, height])
+            layout.size([blockWidth, blockHeight])
                 .words(keywords)
                 .fontSize(function(d)
                 {ldelim}
@@ -37,7 +37,7 @@
                 .on('end', draw);
             
             var svg = d3.select("#wordcloud").append("svg")
-                .attr("viewBox", "0 0 " + width + " " + height)	
+                .attr("viewBox", "0 0 " + blockWidth + " " + blockHeight)	
                 .attr("width", '100%');		
             
             function update() {ldelim}
@@ -53,15 +53,15 @@
             update();
 
             function draw(words, bounds) {ldelim}
-                var w = layout.size()[0],
-                    h = layout.size()[1];
+                var width = layout.size()[0],
+                    height = layout.size()[1];
 
                 scaling = bounds
                     ? Math.min(
-                        w / Math.abs(bounds[1].x - w / 2),
-                        w / Math.abs(bounds[0].x - w / 2),
-                        h / Math.abs(bounds[1].y - h / 2),
-                        h / Math.abs(bounds[0].y - h / 2),
+                        width / Math.abs(bounds[1].x - width / 2),
+                        width / Math.abs(bounds[0].x - width / 2),
+                        height / Math.abs(bounds[1].y - height / 2),
+                        height / Math.abs(bounds[0].y - height / 2),
                     ) / 2
                     : 1;
 
@@ -69,7 +69,7 @@
                 .append("g")
                 .attr(
                     "transform",
-                    "translate(" + [w >> 1, h >> 1] + ")scale(" + scaling + ")",
+                    "translate(" + [width >> 1, height >> 1] + ")scale(" + scaling + ")",
                 )
                 .selectAll("text")
                     .data(words)
