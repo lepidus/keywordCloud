@@ -26,7 +26,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin
     private const KEYWORD_BLOCK_CACHE_DAYS = 2;
     private const ONE_DAY_SECONDS = 60 * 60 * 24;
     private const TWO_DAYS_SECONDS = self::ONE_DAY_SECONDS * self::KEYWORD_BLOCK_CACHE_DAYS;
-    
+
     public function getDisplayName()
     {
         return __('plugins.block.keywordCloud.displayName');
@@ -86,7 +86,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin
             ->filterByContextIds([$journalId])
             ->filterByStatus([Submission::STATUS_PUBLISHED])
             ->getMany();
-        
+
         $keywords = array();
         $locale = Locale::getLocale();
         foreach ($submissions as $submission) {
