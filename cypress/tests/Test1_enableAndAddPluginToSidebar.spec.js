@@ -22,6 +22,7 @@ describe('Keyword Cloud - Enable plugin and add it to the sidebar', function() {
     it('Check presence of keyword cloud block in public site', function() {
         cy.login('dbarnes', null, 'publicknowledge');
         cy.contains('Journal of Public Knowledge').click();
+        cy.waitJQuery();
         cy.get('.block_Keywordcloud');
     });
 });
