@@ -2,7 +2,7 @@
 /**
  * @defgroup plugins_blocks_Keywordcloud KeywordCloud Block Plugin
  */
- 
+
 /**
  * @file plugins/blocks/KeywordCloud/index.php
  *
