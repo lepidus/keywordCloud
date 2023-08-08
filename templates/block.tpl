@@ -19,8 +19,18 @@
 		return cores[Math.floor(Math.random()*cores.length)];
 	{rdelim}
 
+	function normalizeKeywords(keywords) {ldelim}
+		keywords.forEach(function(keyword) {ldelim}
+			keyword.text = keyword.text.toLowerCase();
+		{rdelim});
+
+		return keywords.filter((keyword, index) => {ldelim}
+			return index === keywords.findIndex(k => keyword.text === k.text);
+		{rdelim});
+	{rdelim}
+
 	document.addEventListener("DOMContentLoaded", function() {ldelim}
-		var keywords = {$keywords};
+		var keywords = normalizeKeywords({$keywords});
 		var totalWeight = 0;
 		var width = 300;
 		var height = 200;
