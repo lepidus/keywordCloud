@@ -20,6 +20,8 @@
 	{rdelim}
 
 	function normalizeKeywords(keywords) {ldelim}
+		if (keywords === 'undefined') return [];
+
 		keywords.forEach(function(keyword) {ldelim}
 			keyword.text = keyword.text.toLowerCase();
 		{rdelim});
