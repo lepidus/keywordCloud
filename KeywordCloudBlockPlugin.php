@@ -14,11 +14,11 @@
 
 namespace APP\plugins\blocks\keywordCloud;
 
-use PKP\plugins\BlockPlugin;
-use PKP\cache\CacheManager;
 use APP\facades\Repo;
-use PKP\facades\Locale;
 use APP\submission\Submission;
+use PKP\cache\CacheManager;
+use PKP\facades\Locale;
+use PKP\plugins\BlockPlugin;
 
 class KeywordCloudBlockPlugin extends BlockPlugin
 {
@@ -58,17 +58,17 @@ class KeywordCloudBlockPlugin extends BlockPlugin
         $cacheManager = CacheManager::getManager();
         $cache = $cacheManager->getFileCache(
             $context->getId(),
-            'keywords_'. $locale,
+            'keywords_' . $locale,
             [$this, 'cacheDismiss']
         );
 
-        $keywords =& $cache->getContents();
+        $keywords = & $cache->getContents();
         $currentCacheTime = time() - $cache->getCacheTime();
 
         if ($currentCacheTime > self::TWO_DAYS_SECONDS) {
             $cache->flush();
             $cache->setEntireCache($this->getKeywordsJournal($context->getId()));
-        } elseif ($keywords == "[]") {
+        } elseif ($keywords == '[]') {
             $cache->setEntireCache($this->getKeywordsJournal($context->getId()));
         }
 
@@ -87,7 +87,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin
             ->filterByStatus([Submission::STATUS_PUBLISHED])
             ->getMany();
 
-        $keywords = array();
+        $keywords = [];
         $locale = Locale::getLocale();
         foreach ($submissions as $submission) {
             $publications = $submission->getPublishedPublications();
@@ -95,17 +95,18 @@ class KeywordCloudBlockPlugin extends BlockPlugin
             foreach ($publications as $publication) {
                 $publicationKeywords = $publication->getData('keywords', $locale);
 
-                if(!is_null($publicationKeywords) and count($publicationKeywords) > 0) {
+                if (!is_null($publicationKeywords) and count($publicationKeywords) > 0) {
                     $keywords = array_merge($keywords, $publicationKeywords);
                 }
             }
         }
 
-        $countKeywords = array_count_values($keywords);
+        $uniqueKeywords = array_unique(array_map('strtolower', $keywords));
+        $countKeywords = array_count_values($uniqueKeywords);
         arsort($countKeywords, SORT_NUMERIC);
 
         $topKeywords = array_slice($countKeywords, 0, self::KEYWORD_BLOCK_MAX_ITEMS);
-        $keywords = array();
+        $keywords = [];
 
         foreach ($topKeywords as $key => $countKey) {
             $keywords[] = (object) ['text' => $key, 'size' => $countKey];
