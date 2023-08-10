@@ -116,8 +116,10 @@ class KeywordCloudBlockPlugin extends BlockPlugin
                 }
             }
         }
+
+        $unique_keywords = array_unique(array_map('strtolower', $all_keywords));
         //Count the keywords and sort them in a frequency basis
-        $count_keywords = array_count_values($all_keywords);
+        $count_keywords = array_count_values($unique_keywords);
         arsort($count_keywords, SORT_NUMERIC);
 
         // Put only the most often used keywords in an array
@@ -126,17 +128,12 @@ class KeywordCloudBlockPlugin extends BlockPlugin
         $keywords = array();
 
         foreach ($top_keywords as $key => $countKey) {
-            $keyWords = new stdClass();
-            $keyWords->text = $key;
-            $keyWords->size = $countKey;
-            $keywords[] = $keyWords;
+            $keyword = new stdClass();
+            $keyword->text = $key;
+            $keyword->size = $countKey;
+            $keywords[] = $keyword;
         }
 
         return json_encode($keywords);
-    }
-
-    public function getJavaScriptURL($request)
-    {
-        return $request->getBaseUrl() . '/' . $this->getPluginPath() . '/js/';
     }
 }
