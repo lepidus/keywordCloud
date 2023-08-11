@@ -15,8 +15,8 @@
 
 	<script>
 		function randomColor() {ldelim}
-			var cores = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
-			return cores[Math.floor(Math.random()*cores.length)];
+			var colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
+			return colors[Math.floor(Math.random()*colors.length)];
 		{rdelim}
 
 		{if $keywords}
@@ -25,7 +25,7 @@
 				var totalWeight = 0;
 				var width = 300;
 				var height = 200;
-				var transitionDuration = 200;	
+				var transitionDuration = 200;
 				var length_keywords = keywords.length;
 				var layout = d3.layout.cloud();
 
@@ -36,11 +36,11 @@
 						return fontSize(+d.size);
 					{rdelim})
 					.on('end', draw);
-				
+
 				var svg = d3.select("#wordcloud").append("svg")
-					.attr("viewBox", "0 0 " + width + " " + height)	
-					.attr("width", '100%');		
-				
+					.attr("viewBox", "0 0 " + width + " " + height)
+					.attr("width", '100%');
+
 				function update() {ldelim}
 					var words = layout.words();
 					fontSize = d3.scaleLinear().range([16, 34]);
@@ -48,7 +48,7 @@
 						fontSize.domain([+words[words.length - 1].size || 1, +words[0].size]);
 					{rdelim}
 				{rdelim}
-				
+
 				keywords.forEach(function(item,index){ldelim}totalWeight += item.size;{rdelim});
 
 				update();
@@ -84,7 +84,7 @@
 						.attr("text-anchor", "middle")
 						.attr("transform", function(d) {ldelim}
 							return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-						{rdelim}) 
+						{rdelim})
 						.text(function(d) {ldelim} return d.text; {rdelim})
 						.on("click", function(d, i){ldelim}
 							window.location = "{url router=$smarty.const.ROUTE_PAGE page="search" query="QUERY_SLUG"}".replace(/QUERY_SLUG/, encodeURIComponent(''+d.text+''));
