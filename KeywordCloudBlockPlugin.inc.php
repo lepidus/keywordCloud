@@ -1,4 +1,3 @@
- 
 <?php
 
 /**
@@ -24,42 +23,26 @@ import('classes.submission.SubmissionDAO');
 
 class KeywordCloudBlockPlugin extends BlockPlugin
 {
-    /**
-     * Install default settings on journal creation.
-     * @return string
-     */
     public function getContextSpecificPluginSettingsFile()
     {
         return $this->getPluginPath() . '/settings.xml';
     }
 
-    /**
-     * Get the display name of this plugin.
-     * @return String
-     */
     public function getDisplayName()
     {
         return __('plugins.block.keywordCloud.displayName');
     }
 
-    /**
-     * fallBack for getFileCache
-     */
     public function cacheDismiss()
     {
         return null;
     }
-    /**
-     * Get a description of the plugin.
-     */
+
     public function getDescription()
     {
         return __('plugins.block.keywordCloud.description');
     }
 
-    /**
-     * @see BlockPlugin::getContents
-     */
     public function getContents($templateMgr, $request = null)
     {
         $context = $request->getContext();
@@ -71,7 +54,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin
         $cacheManager = CacheManager::getManager();
         $cache = $cacheManager->getFileCache(
             $context->getId(),
-            'keywords_'. $locale,
+            'keywords_' . $locale,
             [$this, 'cacheDismiss']
         );
 
@@ -96,38 +79,33 @@ class KeywordCloudBlockPlugin extends BlockPlugin
     {
         $submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
 
-        //Get all IDs of the published Articles
         $submissionsIterator = Services::get('submission')->getMany([
             'contextId' => $journalId,
             'status' => STATUS_PUBLISHED,
         ]);
 
-        //Get all Keywords from all published articles of this journal
-        $all_keywords = array();
+        $allKeywords = array();
         $currentLocale = AppLocale::getLocale();
         foreach ($submissionsIterator as $submission) {
             $publications = $submission->getPublishedPublications();
 
             foreach ($publications as $publication) {
-                $publi_keywords = $submissionKeywordDao->getKeywords($publication->getId(), array($currentLocale));
+                $publicationKeywords = $submissionKeywordDao->getKeywords($publication->getId(), array($currentLocale));
 
-                if(count($publi_keywords) > 0) {
-                    $all_keywords = array_merge($all_keywords, $publi_keywords[$currentLocale]);
+                if (count($publicationKeywords) > 0) {
+                    $allKeywords = array_merge($allKeywords, $publicationKeywords[$currentLocale]);
                 }
             }
         }
 
-        $unique_keywords = array_unique(array_map('strtolower', $all_keywords));
-        //Count the keywords and sort them in a frequency basis
-        $count_keywords = array_count_values($unique_keywords);
-        arsort($count_keywords, SORT_NUMERIC);
+        $uniqueKeywords = array_unique(array_map('strtolower', $allKeywords));
+        $countKeywords = array_count_values($uniqueKeywords);
+        arsort($countKeywords, SORT_NUMERIC);
 
-        // Put only the most often used keywords in an array
-        // maximum of KEYWORD_BLOCK_MAX_ITEMS
-        $top_keywords = array_slice($count_keywords, 0, KEYWORD_BLOCK_MAX_ITEMS);
+        $topKeywords = array_slice($countKeywords, 0, KEYWORD_BLOCK_MAX_ITEMS);
         $keywords = array();
 
-        foreach ($top_keywords as $key => $countKey) {
+        foreach ($topKeywords as $key => $countKey) {
             $keyword = new stdClass();
             $keyword->text = $key;
             $keyword->size = $countKey;
