@@ -65,7 +65,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin
         return parent::getContents($templateMgr, $request);
     }
 
-    public function getCachedKeywords($context, $locale)
+    private function getCachedKeywords($context, $locale)
     {
         $cacheManager = CacheManager::getManager();
         $cache = $cacheManager->getFileCache(
