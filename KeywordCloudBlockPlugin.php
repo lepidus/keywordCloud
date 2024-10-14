@@ -16,6 +16,7 @@ namespace APP\plugins\blocks\keywordCloud;
 
 use APP\facades\Repo;
 use APP\submission\Submission;
+use PKP\context\Context;
 use PKP\cache\CacheManager;
 use PKP\facades\Locale;
 use PKP\plugins\BlockPlugin;
@@ -55,6 +56,25 @@ class KeywordCloudBlockPlugin extends BlockPlugin
         }
 
         $locale = Locale::getLocale();
+        $primaryLocale = Locale::getPrimaryLocale();
+
+        $keywords = $this->getCachedKeywords($context, $locale);
+        if ($keywords == '[]') {
+            $keywords = $this->getCachedKeywords($context, $primaryLocale);
+        }
+
+        $templateMgr->addJavaScript('d3', 'https://d3js.org/d3.v4.js');
+        $templateMgr->addJavaScript(
+            'd3-cloud',
+            'https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js'
+        );
+
+        $templateMgr->assign('keywords', $keywords);
+        return parent::getContents($templateMgr, $request);
+    }
+
+    private function getCachedKeywords(Context $context, string $locale): ?string
+    {
         $cacheManager = CacheManager::getManager();
         $cache = $cacheManager->getFileCache(
             $context->getId(),
@@ -65,21 +85,24 @@ class KeywordCloudBlockPlugin extends BlockPlugin
         $keywords = & $cache->getContents();
         $currentCacheTime = time() - $cache->getCacheTime();
 
-        if ($currentCacheTime > self::TWO_DAYS_SECONDS) {
-            $cache->flush();
-            $cache->setEntireCache($this->getKeywordsJournal($context->getId()));
-        } elseif ($keywords == '[]') {
-            $cache->setEntireCache($this->getKeywordsJournal($context->getId()));
+        if (
+            ($keywords && $keywords != '[]')
+            && $currentCacheTime < self::TWO_DAYS_SECONDS
+        ) {
+            return $keywords;
         }
 
-        $templateMgr->addJavaScript('d3', 'https://d3js.org/d3.v4.js');
-        $templateMgr->addJavaScript('d3-cloud', 'https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js');
+        if ($currentCacheTime > self::TWO_DAYS_SECONDS) {
+            $cache->flush();
+        }
 
-        $templateMgr->assign('keywords', $keywords);
-        return parent::getContents($templateMgr, $request);
+        $cache->setEntireCache($this->getJournalKeywords($context->getId(), $locale));
+        $keywords = & $cache->getContents();
+
+        return $keywords;
     }
 
-    public function getKeywordsJournal(int $journalId): string
+    private function getJournalKeywords(int $journalId, string $locale): string
     {
         $submissions = Repo::submission()
             ->getCollector()
@@ -88,7 +111,6 @@ class KeywordCloudBlockPlugin extends BlockPlugin
             ->getMany();
 
         $keywords = [];
-        $locale = Locale::getLocale();
         foreach ($submissions as $submission) {
             $publications = $submission->getPublishedPublications();
 
