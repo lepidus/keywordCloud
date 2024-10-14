@@ -51,21 +51,11 @@ class KeywordCloudBlockPlugin extends BlockPlugin
         }
 
         $locale = AppLocale::getLocale();
-        $cacheManager = CacheManager::getManager();
-        $cache = $cacheManager->getFileCache(
-            $context->getId(),
-            'keywords_' . $locale,
-            [$this, 'cacheDismiss']
-        );
+        $primaryLocale = AppLocale::getPrimaryLocale();
 
-        $keywords =& $cache->getContents();
-        $currentCacheTime = time() - $cache->getCacheTime();
-
-        if ($currentCacheTime > TWO_DAYS_SECONDS) {
-            $cache->flush();
-            $cache->setEntireCache($this->getKeywordsJournal($context->getId()));
-        } elseif ($keywords == "[]") {
-            $cache->setEntireCache($this->getKeywordsJournal($context->getId()));
+        $keywords = $this->getCachedKeywords($context, $locale);
+        if ($keywords == '[]') {
+            $keywords = $this->getCachedKeywords($context, $primaryLocale);
         }
 
         $templateMgr->addJavaScript('d3', 'https://d3js.org/d3.v4.js');
@@ -75,25 +65,53 @@ class KeywordCloudBlockPlugin extends BlockPlugin
         return parent::getContents($templateMgr, $request);
     }
 
-    public function getKeywordsJournal($journalId)
+    private function getCachedKeywords($context, $locale)
+    {
+        $cacheManager = CacheManager::getManager();
+        $cache = $cacheManager->getFileCache(
+            $context->getId(),
+            'keywords_' . $locale,
+            [$this, 'cacheDismiss']
+        );
+
+        $keywords = & $cache->getContents();
+        $currentCacheTime = time() - $cache->getCacheTime();
+
+        if (
+            ($keywords && $keywords != '[]')
+            && $currentCacheTime < TWO_DAYS_SECONDS
+        ) {
+            return $keywords;
+        }
+
+        if ($currentCacheTime > TWO_DAYS_SECONDS) {
+            $cache->flush();
+        }
+
+        $cache->setEntireCache($this->getContextKeywords($context->getId(), $locale));
+        $keywords = & $cache->getContents();
+
+        return $keywords;
+    }
+
+    private function getContextKeywords($contextId, $locale)
     {
         $submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
 
         $submissionsIterator = Services::get('submission')->getMany([
-            'contextId' => $journalId,
+            'contextId' => $contextId,
             'status' => STATUS_PUBLISHED,
         ]);
 
         $allKeywords = array();
-        $currentLocale = AppLocale::getLocale();
         foreach ($submissionsIterator as $submission) {
             $publications = $submission->getPublishedPublications();
 
             foreach ($publications as $publication) {
-                $publicationKeywords = $submissionKeywordDao->getKeywords($publication->getId(), array($currentLocale));
+                $publicationKeywords = $submissionKeywordDao->getKeywords($publication->getId(), array($locale));
 
                 if (count($publicationKeywords) > 0) {
-                    $allKeywords = array_merge($allKeywords, $publicationKeywords[$currentLocale]);
+                    $allKeywords = array_merge($allKeywords, $publicationKeywords[$locale]);
                 }
             }
         }
