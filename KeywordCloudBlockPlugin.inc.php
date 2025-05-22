@@ -96,23 +96,23 @@ class KeywordCloudBlockPlugin extends BlockPlugin
 
     private function getContextKeywords($contextId, $locale)
     {
-        $submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
-
-        $submissionsIterator = Services::get('submission')->getMany([
-            'contextId' => $contextId,
-            'status' => STATUS_PUBLISHED,
-        ]);
+        $publicationIds = Services::get('publication')
+            ->getQueryBuilder([
+                'contextIds' => [$contextId]
+            ])
+            ->getQuery()
+            ->whereIn('s.status', [STATUS_PUBLISHED])
+            ->select('p.publication_id')
+            ->pluck('p.publication_id')
+            ->toArray();
 
         $allKeywords = array();
-        foreach ($submissionsIterator as $submission) {
-            $publications = $submission->getPublishedPublications();
+        $submissionKeywordDao = DAORegistry::getDAO('SubmissionKeywordDAO');
+        foreach ($publicationIds as $publicationId) {
+            $publicationKeywords = $submissionKeywordDao->getKeywords($publicationId, [$locale]);
 
-            foreach ($publications as $publication) {
-                $publicationKeywords = $submissionKeywordDao->getKeywords($publication->getId(), array($locale));
-
-                if (count($publicationKeywords) > 0) {
-                    $allKeywords = array_merge($allKeywords, $publicationKeywords[$locale]);
-                }
+            if (count($publicationKeywords) > 0) {
+                $allKeywords = array_merge($allKeywords, $publicationKeywords[$locale]);
             }
         }
 
