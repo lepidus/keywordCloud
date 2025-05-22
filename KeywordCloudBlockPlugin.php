@@ -18,6 +18,7 @@ use APP\facades\Repo;
 use APP\submission\Submission;
 use PKP\context\Context;
 use PKP\cache\CacheManager;
+use PKP\db\DAORegistry;
 use PKP\facades\Locale;
 use PKP\plugins\BlockPlugin;
 
@@ -104,23 +105,19 @@ class KeywordCloudBlockPlugin extends BlockPlugin
 
     private function getJournalKeywords(int $journalId, string $locale): string
     {
-        $submissions = Repo::submission()
+        $publicationIds = Repo::publication()
             ->getCollector()
             ->filterByContextIds([$journalId])
-            ->filterByStatus([Submission::STATUS_PUBLISHED])
-            ->getMany();
+            ->getQueryBuilder()
+            ->whereIn('p.status', [Submission::STATUS_PUBLISHED])
+            ->select('p.publication_id')
+            ->pluck('p.publication_id');
 
         $keywords = [];
-        foreach ($submissions as $submission) {
-            $publications = $submission->getPublishedPublications();
-
-            foreach ($publications as $publication) {
-                $publicationKeywords = $publication->getData('keywords', $locale);
-
-                if (!is_null($publicationKeywords) and count($publicationKeywords) > 0) {
-                    $keywords = array_merge($keywords, $publicationKeywords);
-                }
-            }
+        $submissionSubjectDao = DAORegistry::getDAO('SubmissionKeywordDAO');
+        foreach ($publicationIds as $publicationId) {
+            $publicationKeywords = $submissionSubjectDao->getKeywords($publicationId, [$locale]);
+            $keywords = array_merge($keywords, $publicationKeywords[$locale] ?? []);
         }
 
         $uniqueKeywords = array_unique(array_map('strtolower', $keywords));
