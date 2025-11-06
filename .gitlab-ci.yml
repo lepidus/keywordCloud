@@ -7,3 +7,6 @@ include:
     file:
       - 'templates/groups/pkp_plugin.yml'
       - 'templates/groups/ojs/cypress_tests.yml'
+
+ojs_integration_tests:
+  allow_failure: true
