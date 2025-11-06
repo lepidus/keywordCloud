@@ -15,12 +15,14 @@
 namespace APP\plugins\blocks\keywordCloud;
 
 use APP\facades\Repo;
+use PKP\controlledVocab\ControlledVocab;
 use APP\submission\Submission;
 use PKP\context\Context;
-use PKP\cache\CacheManager;
+use Illuminate\Support\Facades\Cache;
 use PKP\db\DAORegistry;
 use PKP\facades\Locale;
 use PKP\plugins\BlockPlugin;
+use APP\core\Application;
 
 class KeywordCloudBlockPlugin extends BlockPlugin
 {
@@ -29,17 +31,17 @@ class KeywordCloudBlockPlugin extends BlockPlugin
     private const ONE_DAY_SECONDS = 60 * 60 * 24;
     private const TWO_DAYS_SECONDS = self::ONE_DAY_SECONDS * self::KEYWORD_BLOCK_CACHE_DAYS;
 
-    public function getDisplayName()
+    public function getDisplayName(): string
     {
         return __('plugins.block.keywordCloud.displayName');
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return __('plugins.block.keywordCloud.description');
     }
 
-    public function getContextSpecificPluginSettingsFile()
+    public function getContextSpecificPluginSettingsFile(): string
     {
         return $this->getPluginPath() . '/settings.xml';
     }
@@ -76,31 +78,12 @@ class KeywordCloudBlockPlugin extends BlockPlugin
 
     private function getCachedKeywords(Context $context, string $locale): ?string
     {
-        $cacheManager = CacheManager::getManager();
-        $cache = $cacheManager->getFileCache(
-            $context->getId(),
-            'keywords_' . $locale,
-            [$this, 'cacheDismiss']
-        );
+        $cacheKey = 'keywordCloud_' . $context->getId() . '_' . $locale;
+        $expiration = \DateInterval::createFromDateString(self::KEYWORD_BLOCK_CACHE_DAYS . ' days');
 
-        $keywords = & $cache->getContents();
-        $currentCacheTime = time() - $cache->getCacheTime();
-
-        if (
-            ($keywords && $keywords != '[]')
-            && $currentCacheTime < self::TWO_DAYS_SECONDS
-        ) {
-            return $keywords;
-        }
-
-        if ($currentCacheTime > self::TWO_DAYS_SECONDS) {
-            $cache->flush();
-        }
-
-        $cache->setEntireCache($this->getJournalKeywords($context->getId(), $locale));
-        $keywords = & $cache->getContents();
-
-        return $keywords;
+        return Cache::remember($cacheKey, $expiration, function () use ($context, $locale) {
+            return $this->getJournalKeywords($context->getId(), $locale);
+        });
     }
 
     private function getJournalKeywords(int $journalId, string $locale): string
@@ -114,9 +97,13 @@ class KeywordCloudBlockPlugin extends BlockPlugin
             ->pluck('p.publication_id');
 
         $keywords = [];
-        $submissionSubjectDao = DAORegistry::getDAO('SubmissionKeywordDAO');
         foreach ($publicationIds as $publicationId) {
-            $publicationKeywords = $submissionSubjectDao->getKeywords($publicationId, [$locale]);
+            $publicationKeywords = Repo::controlledVocab()->getBySymbolic(
+                ControlledVocab::CONTROLLED_VOCAB_SUBMISSION_KEYWORD,
+                Application::ASSOC_TYPE_PUBLICATION,
+                $publicationId,
+                [$locale]
+            );
             $keywords = array_merge($keywords, $publicationKeywords[$locale] ?? []);
         }
 
