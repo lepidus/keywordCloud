@@ -3,6 +3,10 @@ variables:
 
 include:
   - project: 'documentacao-e-tarefas/modelosparaintegracaocontinua'
-    ref: main
+    ref: stable-3_5_0
     file:
       - 'templates/groups/pkp_plugin.yml'
+      - 'templates/groups/ojs/cypress_tests.yml'
+
+ojs_integration_tests:
+  allow_failure: true
