@@ -16,7 +16,7 @@ COPYING for the complete terms of this license.
  * Go to Settings -> Website -> Appearance -> Sidebar management -> and drag the "Keyword Cloud Plugin" to the sidebar section.
 
 ## Compatibility
-This plugin is compatible with OJS and OMP 3.2.0.0, 3.2.1.0 and 3.3.0.
+This plugin is compatible with OJS and OMP 3.2.0.0, 3.2.1.0, 3.3.0, 3.4.0 and 3.5.0.  
 
 ## Credits
 
