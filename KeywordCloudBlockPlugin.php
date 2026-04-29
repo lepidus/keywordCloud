@@ -14,15 +14,14 @@
 
 namespace APP\plugins\blocks\keywordCloud;
 
+use APP\core\Application;
 use APP\facades\Repo;
-use PKP\controlledVocab\ControlledVocab;
 use APP\submission\Submission;
-use PKP\context\Context;
 use Illuminate\Support\Facades\Cache;
-use PKP\db\DAORegistry;
+use PKP\context\Context;
+use PKP\controlledVocab\ControlledVocab;
 use PKP\facades\Locale;
 use PKP\plugins\BlockPlugin;
-use APP\core\Application;
 
 class KeywordCloudBlockPlugin extends BlockPlugin
 {
@@ -107,7 +106,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin
             $keywords = array_merge($keywords, $publicationKeywords[$locale] ?? []);
         }
 
-        $uniqueKeywords = array_unique(array_map('strtolower', $keywords));
+        $uniqueKeywords = array_unique(array_map('strtolower', array_column($keywords, 'name')));
         $countKeywords = array_count_values($uniqueKeywords);
         arsort($countKeywords, SORT_NUMERIC);
 
