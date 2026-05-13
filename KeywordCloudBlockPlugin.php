@@ -106,7 +106,12 @@ class KeywordCloudBlockPlugin extends BlockPlugin
             $keywords = array_merge($keywords, $publicationKeywords[$locale] ?? []);
         }
 
-        $uniqueKeywords = array_unique(array_map('strtolower', array_column($keywords, 'name')));
+        $uniqueKeywords = array_unique(array_map('strtolower', 
+            is_array(reset($keywords)) 
+                ? array_column($keywords, 'name')  
+                : $keywords                        
+        ));
+        
         $countKeywords = array_count_values($uniqueKeywords);
         arsort($countKeywords, SORT_NUMERIC);
 
