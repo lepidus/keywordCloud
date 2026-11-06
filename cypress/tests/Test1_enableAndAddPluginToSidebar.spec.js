@@ -25,4 +25,12 @@ describe('Keyword Cloud - Enable plugin and add it to the sidebar', function() {
         cy.contains('Journal of Public Knowledge').click();
         cy.get('.block_keyword_cloud');
     });
+    it('Load the cloud libraries bundled with the plugin', function() {
+        cy.login('dbarnes', null, 'publicknowledge');
+        cy.contains('Journal of Public Knowledge').click();
+        cy.get('script[src*="keywordCloud/js/vendor/d3/d3.min.js"]').should('exist');
+        cy.get('script[src*="keywordCloud/js/vendor/d3-cloud/d3.layout.cloud.js"]').should('exist');
+        cy.get('script[src*="cdn.jsdelivr.net"], script[src*="d3js.org"]').should('not.exist');
+        cy.window().its('d3.layout.cloud').should('be.a', 'function');
+    });
 });
