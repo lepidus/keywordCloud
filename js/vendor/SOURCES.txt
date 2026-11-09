@@ -1,0 +1,21 @@
+Third-party JavaScript bundled with the Keyword Cloud block (KWC-01).
+Files are copied unchanged from the npm registry packages below; the package
+tarball integrity was checked against the npm registry metadata.
+
+d3/d3.min.js
+  Package: d3@4.13.0 (build/d3.min.js)
+  Tarball: https://registry.npmjs.org/d3/-/d3-4.13.0.tgz
+  Tarball integrity: sha512-l8c4+0SldjVKLaE2WG++EQlqD7mh/dmQjvi2L2lKPadAVC+TbJC4ci7Uk9bRi+To0+ansgsS0iWfPjD7DBy+FQ==
+  File SHA-256: 8585db4092b8a9d26201e0d58e343d1b40fa034c4b9c343878923d7649bb1699
+  License: BSD-3-Clause (d3/LICENSE)
+  Replaces: https://d3js.org/d3.v4.js (same release, 4.13.0, unminified)
+
+d3-cloud/d3.layout.cloud.js
+  Package: d3-cloud@1.2.5 (build/d3.layout.cloud.js)
+  Tarball: https://registry.npmjs.org/d3-cloud/-/d3-cloud-1.2.5.tgz
+  Tarball integrity: sha512-4s2hXZgvs0CoUIw31oBAGrHt9Kt/7P9Ik5HIVzISFiWkD0Ga2VLAuO/emO/z1tYIpE7KG2smB4PhMPfFMJpahw==
+  File SHA-256: 6421e957463062196d807bf80ea113857c660e91cbff3c932529ecc70c29a6f0
+  License: BSD-3-Clause (d3-cloud/LICENSE)
+  Replaces: https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js
+  (on 2026-11-06 that mutable URL served the same content, except for a
+  trailing newline)
