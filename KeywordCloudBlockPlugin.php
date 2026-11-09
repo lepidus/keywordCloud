@@ -66,11 +66,9 @@ class KeywordCloudBlockPlugin extends BlockPlugin
             $keywords = $this->getCachedKeywords($context, $primaryLocale);
         }
 
-        $templateMgr->addJavaScript('d3', 'https://d3js.org/d3.v4.js');
-        $templateMgr->addJavaScript(
-            'd3-cloud',
-            'https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js'
-        );
+        $vendorUrl = $request->getBaseUrl() . '/' . $this->getPluginPath() . '/js/vendor';
+        $templateMgr->addJavaScript('d3', $vendorUrl . '/d3/d3.min.js');
+        $templateMgr->addJavaScript('d3-cloud', $vendorUrl . '/d3-cloud/d3.layout.cloud.js');
 
         $templateMgr->assign('keywords', $keywords);
         return parent::getContents($templateMgr, $request);
