@@ -6,4 +6,5 @@ include:
     ref: stable-3_3_0
     file:
       - 'templates/groups/pkp_plugin.yml'
+      - 'templates/groups/ojs/unit_tests.yml'
       - 'templates/groups/ojs/cypress_tests.yml'

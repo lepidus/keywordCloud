@@ -20,6 +20,7 @@ define('TWO_DAYS_SECONDS', ONE_DAY_SECONDS * KEYWORD_BLOCK_CACHE_DAYS);
 
 import('lib.pkp.classes.plugins.BlockPlugin');
 import('classes.submission.SubmissionDAO');
+require_once __DIR__ . '/classes/KeywordCloudCachePolicy.inc.php';
 
 class KeywordCloudBlockPlugin extends BlockPlugin
 {
@@ -78,10 +79,7 @@ class KeywordCloudBlockPlugin extends BlockPlugin
         $keywords = & $cache->getContents();
         $currentCacheTime = time() - $cache->getCacheTime();
 
-        if (
-            ($keywords && $keywords != '[]')
-            && $currentCacheTime < TWO_DAYS_SECONDS
-        ) {
+        if (KeywordCloudCachePolicy::isUsable($keywords, $currentCacheTime, TWO_DAYS_SECONDS)) {
             return $keywords;
         }
 
